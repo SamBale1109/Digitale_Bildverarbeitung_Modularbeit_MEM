@@ -2,23 +2,74 @@ import numpy as np, matplotlib.pyplot as plt
 import cv2
 import os
 
-
-def myfft(img,verbose=True):
-    X_f = np.fft.fft2(img)
-    # shift X_f verschiebt die 0-Frequenz des Spektrums in die Bildmitte
-    X_f = np.fft.fftshift(X_f)
-    # np.abs zur Darstellung der Amplitude, np.log zur Skalierung, log1p zur vermeidung von log(0)
-    X_mag = np.log1p((np.abs(X_f)))
-    X_mag = 255*X_mag/np.max(X_mag)
+def dispFreqDomainAmplitude(X_f:np.ndarray,title:str = "Magnitude F(u,v)"):
+    X_mag = np.abs(X_f)
+    X_mag = np.log1p(X_mag)
+    X_mag = 255 * X_mag / np.max(X_mag)
     X_mag = X_mag.astype(np.uint8)
-    X_phase = np.angle(X_f,deg=True)
+    cv2.imshow(title, X_mag)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+def myfft(img, verbose=True):
+    """
+    Berechnet die 2D-Fouriertransformation eines Graustufenbildes und stellt
+    Amplituden- und Phasenspektrum bereit.
+
+    Die Funktion führt folgende Schritte aus:
+    1. 2D-FFT des Eingabebildes
+    2. Zentrierung der Nullfrequenz (fftshift)
+    3. Berechnung und logarithmische Skalierung des Amplitudenspektrums
+    4. Berechnung des Phasenspektrums
+
+    Parameter
+    ----------
+    img : np.ndarray (H x W)
+        Eingabebild im Ortsraum (Graustufen).
+        Der Datentyp sollte numerisch sein (z. B. uint8 oder float).
+
+    verbose : bool, optional
+        Wenn True, wird das Amplitudenspektrum mit OpenCV angezeigt.
+        Default: True.
+
+    Returns
+    -------
+    X_f : np.ndarray (H x W), complex
+        Komplexes Fourier-Spektrum des Bildes mit zentrierter Nullfrequenz.
+
+    X_mag : np.ndarray (H x W), uint8
+        Logarithmisch skaliertes Amplitudenspektrum zur Visualisierung,
+        normalisiert auf den Wertebereich [0, 255].
+
+    X_phase : np.ndarray (H x W), float
+        Phasenspektrum in Grad (−180° bis 180°).
+
+    Notes
+    -----
+    - Die logarithmische Skalierung (log1p) dient der besseren Darstellung
+      des Amplitudenspektrums, da Fourier-Amplituden typischerweise einen
+      sehr großen Dynamikbereich besitzen.
+    - Das zurückgegebene Amplitudenspektrum (X_mag) ist ausschließlich
+      für Visualisierungszwecke geeignet und nicht für numerische
+      Weiterverarbeitung.
+    - Die FFT geht implizit von periodischen Randbedingungen aus.
+
+    """
+    X_f = np.fft.fft2(img)
+    X_f = np.fft.fftshift(X_f) # verschiebt die 0-Frequenz des Spektrums in die Bildmitte
+
+    X_mag = np.log1p(np.abs(X_f)) # np.abs zur Darstellung der Amplitude, np.log zur Skalierung, log1p zur vermeidung von log(0)
+    X_mag = 255 * X_mag / np.max(X_mag)
+    X_mag = X_mag.astype(np.uint8)
+
+    X_phase = np.angle(X_f, deg=True)
 
     if verbose:
-        cv2.imshow("X_mag",X_mag)
-        cv2.waitKey(0)  
+        cv2.imshow("Amplitude F(u,v)", X_mag)
+        cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    return X_f,X_mag,X_phase
+    return X_f, X_mag, X_phase
 
 def lowPassFilter(img: np.ndarray,filterShape: tuple,verbose=True) -> np.ndarray:
 
@@ -66,7 +117,7 @@ def gaussianLowPassFilter(img: np.ndarray, sigma: float,verbose=True) -> np.ndar
     X_back = np.abs(X_back)
 
     # normalisieren auf 0–255
-    X_back = (255 * X_back / np.max(X_back)).astype(np.uint8)
+    X_back_norm = 255 * X_back / np.max(X_back)
     # --- verbose 3D Visualization ---
     if verbose:
         # Gaussian Filter im Ortsraum ist ebenfalls ein 2D Gaussian
@@ -95,20 +146,23 @@ def gaussianLowPassFilter(img: np.ndarray, sigma: float,verbose=True) -> np.ndar
 
         # --- Plot 3: Filtered Image ---
         ax3 = fig.add_subplot(133)
-        ax3.imshow(X_back, cmap='gray')
+        ax3.imshow(X_back_norm.astype(np.uint8), cmap='gray')
         ax3.set_title("Filtered Image")
         ax3.axis("off")
 
         plt.tight_layout()
         plt.show()
 
-    return X_back
+    return X_back,X_back_norm
 
+def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    x_t = cv2.imread("lena.bmp",cv2.IMREAD_UNCHANGED)
+    # X_f,X_mag, X_phase = myfft(x_t)
 
-x_t = cv2.imread("lena.bmp",cv2.IMREAD_UNCHANGED)
-# X_f,X_mag, X_phase = myfft(x_t)
+    # X_t_filtered = lowPassFilter(x_t,(100,100))
+    X_t_filtered,X_t_filtered_normiert = gaussianLowPassFilter(x_t,sigma=50)
 
-# X_t_filtered = lowPassFilter(x_t,(100,100))
-X_t_filtered = gaussianLowPassFilter(x_t,sigma=50)
+if __name__ =="__main__":
+    main()
