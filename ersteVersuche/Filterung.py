@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-from DiscreteFourierTransform import myfft, gaussianLowPassFilter
+from DiscreteFourierTransform import myfft, gaussianLowPassFilter, dispImg
 import time
 import math
 
@@ -33,7 +33,6 @@ def convolve2d(image:np.ndarray, kernel: np.ndarray,verbose: bool=True)->np.ndar
 
     return output
 
-import numpy as np
 
 def convolve2d_3x3_vectorized(image: np.ndarray,
                               kernel: np.ndarray,
@@ -105,6 +104,7 @@ def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     x_t = cv2.imread("lena.bmp",cv2.IMREAD_UNCHANGED)
+    dispImg(x_t)
     sigmaInFreqDomain = 50
     sigmaInSpacialDomain = 1/(2*np.pi*sigmaInFreqDomain)
     x_t_gausFiltered,x_t_gausFiltered_norm = gaussianLowPassFilter(x_t,sigma=sigmaInFreqDomain,verbose=True)
@@ -128,9 +128,7 @@ def main():
     print(f"convolve2d_3x3_vectorized time: {(Tend2_start3 - Tend1_start2)/1000000:.4f} miliseconds")
     print(f"cv2.filter2D time: {(Tend3 - Tend2_start3)/1000000:.4f} miliseconds")
 
-    cv2.imshow("cv2filter",X_t_filtered.astype(np.uint8))
-    cv2.waitKey(0)  
-    cv2.destroyAllWindows()
+    dispImg(X_t_filtered,"cv2filter")
 
 
 

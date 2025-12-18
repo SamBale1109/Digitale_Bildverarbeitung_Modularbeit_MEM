@@ -2,6 +2,16 @@ import numpy as np, matplotlib.pyplot as plt
 import cv2
 import os
 
+
+
+def dispImg(img:np.ndarray,title:str = "dispImg Output"):
+    temp_img = img.copy()
+    temp_img = 255*(temp_img/temp_img.max())
+    cv2.imshow(title, temp_img.astype(dtype=np.uint8))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+
 def dispFreqDomainAmplitude(X_f:np.ndarray,title:str = "Magnitude F(u,v)"):
     X_mag = np.abs(X_f)
     X_mag = np.log1p(X_mag)
@@ -11,7 +21,7 @@ def dispFreqDomainAmplitude(X_f:np.ndarray,title:str = "Magnitude F(u,v)"):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def myfft(img, verbose=True):
+def myfft(img:np.ndarray, verbose:bool=True):
     """
     Berechnet die 2D-Fouriertransformation eines Graustufenbildes und stellt
     Amplituden- und Phasenspektrum bereit.
@@ -70,6 +80,43 @@ def myfft(img, verbose=True):
         cv2.destroyAllWindows()
 
     return X_f, X_mag, X_phase
+
+
+def myinvfft(X: np.ndarray, verbose: bool = True) -> np.ndarray:
+    """
+    Berechnet die inverse 2D-Fouriertransformation eines zentrierten
+    Spektrums und rekonstruiert das Bild im Ortsraum.
+
+    Parameter
+    ----------
+    X : np.ndarray (H x W), complex
+        Fourier-Spektrum mit zentrierter Nullfrequenz (fftshifted).
+
+    verbose : bool
+        Wenn True, wird das rekonstruierte Bild zu Anzeigezwecken dargestellt.
+
+    Returns
+    -------
+    x : np.ndarray (H x W), float
+        Rekonstruiertes Bild im Ortsraum (float, nicht normalisiert).
+    """
+
+    X_backshifted = np.fft.ifftshift(X)
+    x = np.fft.ifft2(X_backshifted)
+
+    # numerisch kleiner Imaginärteil → verwerfen
+    x = np.real(x)
+
+    if verbose:
+        disp = x - x.min()
+        disp = disp / disp.max() * 255
+        disp = disp.astype(np.uint8)
+
+        cv2.imshow("x_reconstructed", disp)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    return x
 
 def lowPassFilter(img: np.ndarray,filterShape: tuple,verbose=True) -> np.ndarray:
 
