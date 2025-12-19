@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-import sympy as sp
 import matplotlib.pyplot as plt
 
 def create_histogram(img,verbose=True,title="Histogramm der Graustufen"):
@@ -58,16 +57,21 @@ def hist_equalize(img, hist, verbose=True):
     return equalized_img, equalized_hist
 
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-unstretched_img = cv2.imread("unequalized.jpg",cv2.IMREAD_UNCHANGED)
-hist = create_histogram(unstretched_img)
+def main():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-stretched_img, stretched_histogram = stretch_histogram(unstretched_img,hist)
-equalized_img, equalized_hist = hist_equalize(unstretched_img,hist)
+    unstretched_img = cv2.imread("unequalized.jpg",cv2.IMREAD_UNCHANGED)
+    hist = create_histogram(unstretched_img)
 
-cv2.imshow("stretched_img",stretched_img)
-cv2.waitKey(0)  # wartet auf Tastendruck
-cv2.imshow("equalized_img",equalized_img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    stretched_img, stretched_histogram = stretch_histogram(unstretched_img,hist)
+    equalized_img, equalized_hist = hist_equalize(unstretched_img,hist)
+
+    cv2.imshow("stretched_img",stretched_img)
+    cv2.waitKey(0)  # wartet auf Tastendruck
+    cv2.imshow("equalized_img",equalized_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+if __name__ =="__main__":
+    main()
