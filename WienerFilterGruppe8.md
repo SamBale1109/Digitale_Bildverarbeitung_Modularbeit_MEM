@@ -8,21 +8,17 @@ imshow(Originalbild);
 title('Originalbild (normalisiert)');
 ```
 
-![figure_0.png](WienerFilterGruppe8_media/figure_0.png)
+![figure_0.png](./doc/Bilder/figure_0.png)
 
 ```matlab
 OriginalbildFT = fft2(Originalbild);
 dispFreqDomainAmplitude(OriginalbildFT,"Originalbild im Frequenzdomände")
 ```
 
-![figure_1.png](WienerFilterGruppe8_media/figure_1.png)
+![figure_1.png](./doc/Bilder/figure_1.png)
 # Degradation
 ```matlab
 degradationsart= "psf"
-```
-
-```matlabTextOutput
-degradationsart = "psf"
 ```
 
 ```matlab
@@ -67,13 +63,13 @@ switch degradationsart
 end
 ```
 
-![figure_2.png](WienerFilterGruppe8_media/figure_2.png)
+![figure_2.png](./doc/Bilder/figure_2.png)
 
-![figure_3.png](WienerFilterGruppe8_media/figure_3.png)
+![figure_3.png](./doc/Bilder/figure_3.png)
 
-![figure_4.png](WienerFilterGruppe8_media/figure_4.png)
+![figure_4.png](./doc/Bilder/figure_4.png)
 
-![figure_5.png](WienerFilterGruppe8_media/figure_5.png)
+![figure_5.png](./doc/Bilder/figure_5.png)
 # Additives Rauschen mit Wahrscheinlichkeitsdichtefunktion (PDF)
 
 Die Rauschkomponente wird als Bild gleicher Größe wie das Eingangsbild modelliert. Jedes Pixel dieses Rauschbildes ist eine Zufallsvariable, deren Werte einer bestimmten Wahrscheinlichkeitsdichtefunktion (Probability Density Function, PDF) folgen. Durch Addition dieses Rauschbildes zum Originalbild entsteht ein gestörtes Bild.
@@ -114,7 +110,7 @@ imshow(noisy_img,[]);
 title("Verrauschtes und degradiertes Bild");
 ```
 
-![figure_6.png](WienerFilterGruppe8_media/figure_6.png)
+![figure_6.png](./doc/Bilder/figure_6.png)
 # Ermittlung des NSR / K
 ## Ermittlung von $S_{\textrm{nn}}$ 
 
@@ -138,7 +134,7 @@ bottomRightCorner = [40,40];
 showBoundingBox(noisy_img,topLeftCorner,bottomRightCorner)
 ```
 
-![figure_7.png](WienerFilterGruppe8_media/figure_7.png)
+![figure_7.png](./doc/Bilder/figure_7.png)
 
 ```matlab
 S = noisy_img(topLeftCorner(1):bottomRightCorner(1), topLeftCorner(2):bottomRightCorner(2));
@@ -171,7 +167,7 @@ title('Normiertes Histogramm mit Gaußverteilung');
 hold off;
 ```
 
-![figure_8.png](WienerFilterGruppe8_media/figure_8.png)
+![figure_8.png](./doc/Bilder/figure_8.png)
 
 ```matlab
 fprintf('geschätztes Sigma Rauschen = %.4f\n', sigma_noise_echt);
@@ -190,7 +186,7 @@ histogram(noisy_img)
 title("Histogram des degradierten verrauschten Bildes")
 ```
 
-![figure_9.png](WienerFilterGruppe8_media/figure_9.png)
+![figure_9.png](./doc/Bilder/figure_9.png)
 
 ```matlab
 p_s_g = counts_g / sum(counts_g);
@@ -239,7 +235,7 @@ imshow(real(BildrestauriertPseudoInv))
 title("Restauriert mit Pseudo-Invers-Filter")
 ```
 
-![figure_10.png](WienerFilterGruppe8_media/figure_10.png)
+![figure_10.png](./doc/Bilder/figure_10.png)
 # Wiener Filter
 
  $$ W(u,v)=\left\lbrack \frac{H^* (u,v)}{|H(u,v)|^2 +NSR}\right\rbrack $$ 
@@ -265,7 +261,7 @@ figure , imshow(I_renew_known);
 title('Ideale Restauration')
 ```
 
-![figure_11.png](WienerFilterGruppe8_media/figure_11.png)
+![figure_11.png](./doc/Bilder/figure_11.png)
 
 ```matlab
 MSE_known = immse(Originalbild, I_renew_known); %Qualität der Restauration beurteilen
@@ -288,7 +284,7 @@ name = sprintf("RestauriertesBild_K%.3f.png", NSR);
 title(name)
 ```
 
-![figure_12.png](WienerFilterGruppe8_media/figure_12.png)
+![figure_12.png](./doc/Bilder/figure_12.png)
 
 ```matlab
 
@@ -311,7 +307,7 @@ Filterlabels = {
 frequenzgangVergleich(Filter,Filterlabels);
 ```
 
-![figure_13.png](WienerFilterGruppe8_media/figure_13.png)
+![figure_13.png](./doc/Bilder/figure_13.png)
 
 
 
